@@ -7,15 +7,20 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.EventListener;
+import javax.annotation.Nullable;
 
 public class MaterialsDashboardActivity extends AppCompatActivity {
+
     private LinearLayout layoutRequests;
     private TextView tvNoRequests;
     private TextView tvComponentRequest;
     private Button btnAccept, btnReject;
-
-    // This would be replaced with a proper database in a real app
-    public static String pendingComponentRequest = null;
+    private FirebaseFirestore db;
+    private String componentId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +33,19 @@ public class MaterialsDashboardActivity extends AppCompatActivity {
         btnAccept = findViewById(R.id.btnAccept);
         btnReject = findViewById(R.id.btnReject);
 
+        db = FirebaseFirestore.getInstance();
+
         btnAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (pendingComponentRequest != null) {
-                    // In a real app, this would update a database
-                    ProductionDashboardActivity.requestAccepted = true;
-                    ProductionDashboardActivity.requestPending = false;
-                    pendingComponentRequest = null;
-
-                    Toast.makeText(MaterialsDashboardActivity.this, "Solicitud aceptada", Toast.LENGTH_SHORT).show();
-                    updateRequestsView();
+                if (componentId != null) {
+                    db.collection("pedidos").document(componentId)
+                            .update("status", "aceptado")
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(MaterialsDashboardActivity.this, "Solicitud aceptada", Toast.LENGTH_SHORT).show();
+                                componentId = null;
+                                updateRequestsView();
+                            });
                 }
             }
         });
@@ -46,44 +53,55 @@ public class MaterialsDashboardActivity extends AppCompatActivity {
         btnReject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (pendingComponentRequest != null) {
-                    // In a real app, this would update a database
-                    ProductionDashboardActivity.requestRejected = true;
-                    ProductionDashboardActivity.requestPending = false;
-                    pendingComponentRequest = null;
-
-                    Toast.makeText(MaterialsDashboardActivity.this, "Solicitud rechazada", Toast.LENGTH_SHORT).show();
-                    updateRequestsView();
+                if (componentId != null) {
+                    db.collection("pedidos").document(componentId)
+                            .update("status", "rechazado")
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(MaterialsDashboardActivity.this, "Solicitud rechazada", Toast.LENGTH_SHORT).show();
+                                componentId = null;
+                                updateRequestsView();
+                            });
                 }
             }
         });
 
-        // Start a thread to check for new requests
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(1000); // Check every second
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateRequestsView();
+        db.collection("pedidos")
+                .whereEqualTo("status", "pendiente")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable com.google.firebase.firestore.FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Toast.makeText(MaterialsDashboardActivity.this, "Error al obtener solicitudes", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (snapshots != null && !snapshots.isEmpty()) {
+                            for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                                switch (dc.getType()) {
+                                    case ADDED:
+                                    case MODIFIED:
+                                        componentId = dc.getDocument().getId();
+                                        updateRequestsView();
+                                        break;
+                                    case REMOVED:
+                                        componentId = null;
+                                        updateRequestsView();
+                                        break;
+                                }
                             }
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        } else {
+                            componentId = null;
+                            updateRequestsView();
+                        }
                     }
-                }
-            }
-        }).start();
+                });
     }
 
     private void updateRequestsView() {
-        if (pendingComponentRequest != null) {
+        if (componentId != null) {
             tvNoRequests.setVisibility(View.GONE);
             layoutRequests.setVisibility(View.VISIBLE);
-            tvComponentRequest.setText("Solicitud de componente: " + pendingComponentRequest);
+            tvComponentRequest.setText("Solicitud de componente: " + componentId);
         } else {
             tvNoRequests.setVisibility(View.VISIBLE);
             layoutRequests.setVisibility(View.GONE);

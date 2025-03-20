@@ -7,16 +7,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import javax.annotation.Nullable;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.EventListener;
+
+import java.util.HashMap;
 
 public class ProductionDashboardActivity extends AppCompatActivity {
+
     private EditText etComponentNumber;
     private Button btnSendRequest;
     private TextView tvNotifications;
-
-    // This would be replaced with a proper database or shared preferences in a real app
-    public static boolean requestAccepted = false;
-    public static boolean requestRejected = false;
-    public static boolean requestPending = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,49 +41,46 @@ public class ProductionDashboardActivity extends AppCompatActivity {
                     return;
                 }
 
-                // In a real app, this would send the request to a server or database
-                MaterialsDashboardActivity.pendingComponentRequest = componentNumber;
-                requestPending = true;
-                requestAccepted = false;
-                requestRejected = false;
+                // Subir solicitud a Firebase
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                HashMap<String, Object> request = new HashMap<>();
+                request.put("component", componentNumber);
+                request.put("status", "pendiente");
 
-                Toast.makeText(ProductionDashboardActivity.this, "Solicitud enviada", Toast.LENGTH_SHORT).show();
-                etComponentNumber.setText("");
+                db.collection("pedidos").add(request)
+                        .addOnSuccessListener(documentReference -> {
+                            Toast.makeText(ProductionDashboardActivity.this, "Solicitud enviada", Toast.LENGTH_SHORT).show();
+                            etComponentNumber.setText("");
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(ProductionDashboardActivity.this, "Error al enviar solicitud", Toast.LENGTH_SHORT).show());
             }
         });
 
-        // Start a thread to check for notifications
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(1000); // Check every second
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateNotifications();
-                            }
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-    }
+        // Listener para recibir cambios de estado de las solicitudes
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("pedidos")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            return;
+                        }
 
-    private void updateNotifications() {
-        if (requestAccepted) {
-            tvNotifications.setText("Solicitud aceptada por Materiales");
-            tvNotifications.setVisibility(View.VISIBLE);
-            requestAccepted = false;
-        } else if (requestRejected) {
-            tvNotifications.setText("Solicitud rechazada por Materiales");
-            tvNotifications.setVisibility(View.VISIBLE);
-            requestRejected = false;
-        } else if (!requestPending) {
-            tvNotifications.setVisibility(View.GONE);
-        }
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.MODIFIED) {
+                                String status = dc.getDocument().getString("status");
+
+                                if ("aceptado".equals(status)) {
+                                    tvNotifications.setText("Solicitud aceptada por Materiales");
+                                    tvNotifications.setVisibility(View.VISIBLE);
+                                } else if ("rechazado".equals(status)) {
+                                    tvNotifications.setText("Solicitud rechazada por Materiales");
+                                    tvNotifications.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                    }
+                });
     }
 }

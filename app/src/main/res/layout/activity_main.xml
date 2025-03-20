@@ -10,7 +10,6 @@
     android:background="#E6F2FF"
     tools:context=".MainActivity">
 
-    <!-- Título de la aplicación -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,7 +19,6 @@
         android:textStyle="bold"
         android:layout_marginBottom="32dp"/>
 
-    <!-- Botón para el Área de Materiales -->
     <Button
         android:id="@+id/btnMaterials"
         android:layout_width="match_parent"
@@ -31,7 +29,6 @@
         android:padding="16dp"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Botón para el Área de Producción -->
     <Button
         android:id="@+id/btnProduction"
         android:layout_width="match_parent"
@@ -41,4 +38,7 @@
         android:backgroundTint="#4D94FF"
         android:padding="16dp"
         android:layout_marginBottom="32dp"/>
+
+
+
 </LinearLayout>

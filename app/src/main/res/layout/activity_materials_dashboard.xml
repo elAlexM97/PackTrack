@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -44,13 +43,47 @@
                 android:textColor="#666666"
                 android:padding="16dp"/>
 
+            <!-- Layout donde aparecerán las solicitudes -->
             <LinearLayout
                 android:id="@+id/layoutRequests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone">
-                <!-- Request items will be added here dynamically -->
+                android:visibility="gone"
+                android:padding="16dp"
+                android:background="@android:color/white"
+                android:elevation="4dp">
+
+                <!-- TEXTO PARA MOSTRAR LA SOLICITUD -->
+                <TextView
+                    android:id="@+id/tvComponentRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Solicitud de componente"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:padding="8dp"/>
+
+                <!-- BOTÓN ACEPTAR -->
+                <Button
+                    android:id="@+id/btnAccept"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aceptar"
+                    android:backgroundTint="#4CAF50"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="8dp"/>
+
+                <!-- BOTÓN RECHAZAR -->
+                <Button
+                    android:id="@+id/btnReject"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Rechazar"
+                    android:backgroundTint="#F44336"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="8dp"/>
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
