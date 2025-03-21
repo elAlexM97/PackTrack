@@ -23,29 +23,31 @@
         android:id="@+id/etUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="#FFFFFF"
         android:hint="Usuario"
         android:inputType="text"
-        android:padding="16dp"
-        android:background="@drawable/edit_text_background"
-        android:layout_marginBottom="16dp"/>
+        android:padding="16dp" />
 
     <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:background="#FFFFFF"
         android:hint="Contraseña"
         android:inputType="textPassword"
-        android:padding="16dp"
-        android:background="@drawable/edit_text_background"
-        android:layout_marginBottom="24dp"/>
+        android:padding="16dp" />
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#4D94FF"
+        android:padding="16dp"
         android:text="Iniciar Sesión"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#4D94FF"
-        android:padding="16dp"/>
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
 </LinearLayout>

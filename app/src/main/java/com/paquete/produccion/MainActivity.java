@@ -1,13 +1,14 @@
 package com.paquete.produccion;
 
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.FirebaseApp;
 
 public class MainActivity extends AppCompatActivity {
-
     private Button btnMaterials, btnProduction;
 
     @Override
@@ -15,20 +16,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Referencias a los botones
+        // Inicializar Firebase
+        FirebaseApp.initializeApp(this);
+
         btnMaterials = findViewById(R.id.btnMaterials);
         btnProduction = findViewById(R.id.btnProduction);
 
-        // Redirigir al login de Materiales
-        btnMaterials.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MaterialsLoginActivity.class);
-            startActivity(intent);
+        btnMaterials.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MaterialsLoginActivity.class);
+                startActivity(intent);
+            }
         });
 
-        // Redirigir al login de Producción
-        btnProduction.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ProductionLoginActivity.class);
-            startActivity(intent);
+        btnProduction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ProductionLoginActivity.class);
+                startActivity(intent);
+            }
         });
     }
 }

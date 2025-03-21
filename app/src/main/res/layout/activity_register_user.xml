@@ -22,39 +22,42 @@
         android:id="@+id/etName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="#FFFFFF"
         android:hint="Nombre Completo"
         android:inputType="textPersonName"
         android:padding="16dp"
-        android:background="@drawable/edit_text_background"
-        android:layout_marginBottom="16dp"/>
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="#FFFFFF"
         android:hint="Correo Electrónico"
         android:inputType="textEmailAddress"
         android:padding="16dp"
-        android:background="@drawable/edit_text_background"
-        android:layout_marginBottom="16dp"/>
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:background="#FFFFFF"
         android:hint="Contraseña"
         android:inputType="textPassword"
         android:padding="16dp"
-        android:background="@drawable/edit_text_background"
-        android:layout_marginBottom="24dp"/>
+        android:textSize="20sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="Departamento:"
-        android:textSize="16sp"
         android:textColor="#0066CC"
-        android:layout_marginBottom="8dp"/>
+        android:textSize="24sp" />
 
     <RadioGroup
         android:id="@+id/rgDepartment"
@@ -67,23 +70,27 @@
             android:id="@+id/rbMaterials"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="Materiales"
-            android:checked="true"/>
+            android:textSize="20sp" />
 
         <RadioButton
             android:id="@+id/rbProduction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Producción"/>
+            android:text="Producción"
+            android:textSize="20sp" />
     </RadioGroup>
 
     <Button
         android:id="@+id/btnRegister"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Registrar Usuario"
-        android:textColor="#FFFFFF"
         android:backgroundTint="#4D94FF"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:text="Registrar Usuario"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp" />
 
 </LinearLayout>
