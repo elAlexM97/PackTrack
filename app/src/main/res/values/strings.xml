@@ -1,3 +1,48 @@
 <resources>
-    <string name="app_name">produccion</string>
+    <string name="app_name">PackTrack</string>
+    
+    <!-- Main Activity -->
+    <string name="app_title">PackTrack</string>
+    <string name="materials_area">Área de Materiales</string>
+    <string name="production_area">Área de Producción</string>
+    
+    <!-- Login -->
+    <string name="login_materials">Inicio de Sesión - Materiales</string>
+    <string name="login_production">Inicio de Sesión - Producción</string>
+    <string name="username">Usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="login_button">Iniciar Sesión</string>
+    <string name="incorrect_credentials">Credenciales incorrectas</string>
+    <string name="login_error">Error al iniciar sesión</string>
+    
+    <!-- Materials Dashboard -->
+    <string name="materials_panel">Panel de Materiales</string>
+    <string name="component_requests">Solicitudes de Componentes</string>
+    <string name="no_pending_requests">No hay solicitudes pendientes</string>
+    <string name="component_request">Solicitud de componente</string>
+    <string name="accept">Aceptar</string>
+    <string name="reject">Rechazar</string>
+    <string name="request_accepted">Solicitud aceptada</string>
+    <string name="request_rejected">Solicitud rechazada</string>
+    <string name="error_loading_requests">Error al obtener solicitudes</string>
+    
+    <!-- Production Dashboard -->
+    <string name="production_panel">Panel de Producción</string>
+    <string name="request_component">Solicitar Componente</string>
+    <string name="material">Material</string>
+    <string name="measurements">Medidas</string>
+    <string name="color">Color</string>
+    <string name="area">Área</string>
+    <string name="send_request">Enviar Solicitud</string>
+    <string name="enter_component_number">Ingrese un número de componente</string>
+    <string name="request_sent">Solicitud enviada</string>
+    <string name="error_sending_request">Error al enviar solicitud</string>
+    <string name="request_accepted_by_materials">Solicitud aceptada por Materiales</string>
+    <string name="request_rejected_by_materials">Solicitud rechazada por Materiales</string>
+    <string name="notification">Notificación</string>
+    
+    <!-- Common -->
+    <string name="loading">Cargando...</string>
+    <string name="error">Error</string>
+    <string name="success">Éxito</string>
 </resources>

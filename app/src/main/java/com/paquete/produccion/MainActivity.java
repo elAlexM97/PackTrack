@@ -19,23 +19,38 @@ public class MainActivity extends AppCompatActivity {
         // Inicializar Firebase
         FirebaseApp.initializeApp(this);
 
+        initializeViews();
+        setupClickListeners();
+    }
+
+    private void initializeViews() {
         btnMaterials = findViewById(R.id.btnMaterials);
         btnProduction = findViewById(R.id.btnProduction);
+    }
 
+    private void setupClickListeners() {
         btnMaterials.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MaterialsLoginActivity.class);
-                startActivity(intent);
+                navigateToMaterialsLogin();
             }
         });
 
         btnProduction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ProductionLoginActivity.class);
-                startActivity(intent);
+                navigateToProductionLogin();
             }
         });
+    }
+
+    private void navigateToMaterialsLogin() {
+        Intent intent = new Intent(MainActivity.this, MaterialsLoginActivity.class);
+        startActivity(intent);
+    }
+
+    private void navigateToProductionLogin() {
+        Intent intent = new Intent(MainActivity.this, ProductionLoginActivity.class);
+        startActivity(intent);
     }
 }
