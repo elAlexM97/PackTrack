@@ -17,10 +17,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".RegisterUserActivity" />
+        <activity android:name=".LoginSelectionActivity" />
         <activity android:name=".MaterialsLoginActivity" />
         <activity android:name=".ProductionLoginActivity" />
+        <activity android:name=".BaseDashboardActivity" />
         <activity android:name=".MaterialsDashboardActivity" />
         <activity android:name=".ProductionDashboardActivity" />
+        <activity android:name=".QRScannerActivity"
+            android:screenOrientation="portrait" />
+        
+        <!-- Permisos para cámara (QR Scanner) -->
+        <uses-feature android:name="android.hardware.camera" android:required="false" />
+        <uses-permission android:name="android.permission.CAMERA" />
     </application>
 
 </manifest>

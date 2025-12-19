@@ -9,57 +9,101 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class ProductionLoginActivity extends AppCompatActivity {
-    private EditText etUsername, etPassword;
+    private EditText etEmail, etPassword;
     private Button btnLogin;
-    
-    // Credenciales temporales - en producción usar Firebase Auth
-    private static final String VALID_USERNAME = "production";
-    private static final String VALID_PASSWORD = "1234";
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_production_login);
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         initializeViews();
         setupLoginButton();
     }
 
     private void initializeViews() {
-        etUsername = findViewById(R.id.etUsername);
+        etEmail = findViewById(R.id.etUsername); // Reutilizando el ID existente
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
     }
 
     private void setupLoginButton() {
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptLogin();
-            }
-        });
+        btnLogin.setOnClickListener(v -> attemptLogin());
     }
 
     private void attemptLogin() {
-        String username = etUsername.getText().toString().trim();
+        String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (!validateInputs(username, password)) {
+        if (!validateInputs(email, password)) {
             return;
         }
 
-        if (authenticateUser(username, password)) {
-            navigateToDashboard();
-        } else {
-            showError(getString(R.string.incorrect_credentials));
-        }
+        btnLogin.setEnabled(false);
+        btnLogin.setText("Iniciando sesión...");
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            verifyUserType(user.getUid(), "produccion");
+                        }
+                    } else {
+                        showError("Error: " + task.getException().getMessage());
+                        btnLogin.setEnabled(true);
+                        btnLogin.setText(getString(R.string.login_button));
+                    }
+                });
     }
 
-    private boolean validateInputs(String username, String password) {
-        if (TextUtils.isEmpty(username)) {
-            etUsername.setError("El usuario es requerido");
-            etUsername.requestFocus();
+    private void verifyUserType(String userId, String expectedType) {
+        db.collection("usuarios").document(userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            String userType = document.getString("userType");
+                            if (expectedType.equals(userType)) {
+                                navigateToDashboard();
+                            } else {
+                                mAuth.signOut();
+                                showError("Este usuario no pertenece al área de Producción");
+                                btnLogin.setEnabled(true);
+                                btnLogin.setText(getString(R.string.login_button));
+                            }
+                        } else {
+                            showError("Usuario no encontrado");
+                            btnLogin.setEnabled(true);
+                            btnLogin.setText(getString(R.string.login_button));
+                        }
+                    } else {
+                        showError("Error al verificar usuario");
+                        btnLogin.setEnabled(true);
+                        btnLogin.setText(getString(R.string.login_button));
+                    }
+                });
+    }
+
+    private boolean validateInputs(String email, String password) {
+        if (TextUtils.isEmpty(email)) {
+            etEmail.setError("El correo es requerido");
+            etEmail.requestFocus();
             return false;
         }
 
@@ -70,10 +114,6 @@ public class ProductionLoginActivity extends AppCompatActivity {
         }
 
         return true;
-    }
-
-    private boolean authenticateUser(String username, String password) {
-        return VALID_USERNAME.equals(username) && VALID_PASSWORD.equals(password);
     }
 
     private void navigateToDashboard() {

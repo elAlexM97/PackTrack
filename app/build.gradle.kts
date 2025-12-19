@@ -40,12 +40,20 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.messaging)
 
     // AndroidX
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
+    implementation(libs.viewpager2)
+    implementation(libs.recyclerview)
+
+    // QR Code
+    implementation(libs.zxing.android.embedded)
 
     // Testing
     testImplementation(libs.junit)

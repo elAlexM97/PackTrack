@@ -1,171 +1,46 @@
 package com.paquete.produccion;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import javax.annotation.Nullable;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.EventListener;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.HashMap;
-
-public class ProductionDashboardActivity extends AppCompatActivity {
-
-    private EditText etMaterial, etMeasurements, etColor, etArea;
-    private Button btnSendRequest;
-    private TextView tvNotifications;
-    private FirebaseFirestore db;
+public class ProductionDashboardActivity extends BaseDashboardActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_production_dashboard);
+    protected void setupNavigationBar() {
+        List<AnimatedBottomNavBar.NavItem> items = new ArrayList<>();
+        items.add(new AnimatedBottomNavBar.NavItem(android.R.drawable.ic_menu_add, getString(R.string.nav_request)));
+        items.add(new AnimatedBottomNavBar.NavItem(android.R.drawable.ic_menu_view, getString(R.string.nav_tickets)));
+        items.add(new AnimatedBottomNavBar.NavItem(android.R.drawable.ic_menu_recent_history, getString(R.string.nav_history)));
 
-        initializeViews();
-        setupFirestore();
-        setupSendRequestButton();
-        setupRequestStatusListener();
+        setupNavBar(items);
     }
 
-    private void initializeViews() {
-        etMaterial = findViewById(R.id.etComponentNumber);
-        etMeasurements = findViewById(R.id.etComponentNumber2);
-        etColor = findViewById(R.id.etComponentNumber3);
-        etArea = findViewById(R.id.etComponentNumber4);
-        btnSendRequest = findViewById(R.id.btnSendRequest);
-        tvNotifications = findViewById(R.id.tvNotifications);
-    }
-
-    private void setupFirestore() {
-        db = FirebaseFirestore.getInstance();
-    }
-
-    private void setupSendRequestButton() {
-        btnSendRequest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendRequest();
-            }
-        });
-    }
-
-    private void sendRequest() {
-        String material = etMaterial.getText().toString().trim();
-        String measurements = etMeasurements.getText().toString().trim();
-        String color = etColor.getText().toString().trim();
-        String area = etArea.getText().toString().trim();
-
-        if (!validateRequest(material, measurements, color, area)) {
-            return;
-        }
-
-        HashMap<String, Object> request = new HashMap<>();
-        request.put("material", material);
-        request.put("medidas", measurements);
-        request.put("color", color);
-        request.put("area", area);
-        request.put("status", "pendiente");
-        request.put("timestamp", System.currentTimeMillis());
-
-        db.collection("pedidos").add(request)
-                .addOnSuccessListener(documentReference -> {
-                    showSuccess(getString(R.string.request_sent));
-                    clearForm();
-                })
-                .addOnFailureListener(e -> {
-                    showError(getString(R.string.error_sending_request));
-                });
-    }
-
-    private boolean validateRequest(String material, String measurements, String color, String area) {
-        boolean isValid = true;
-
-        if (TextUtils.isEmpty(material)) {
-            etMaterial.setError("El material es requerido");
-            etMaterial.requestFocus();
-            isValid = false;
-        }
-
-        if (TextUtils.isEmpty(measurements)) {
-            etMeasurements.setError("Las medidas son requeridas");
-            if (isValid) {
-                etMeasurements.requestFocus();
-            }
-            isValid = false;
-        }
-
-        if (TextUtils.isEmpty(color)) {
-            etColor.setError("El color es requerido");
-            if (isValid) {
-                etColor.requestFocus();
-            }
-            isValid = false;
-        }
-
-        if (TextUtils.isEmpty(area)) {
-            etArea.setError("El área es requerida");
-            if (isValid) {
-                etArea.requestFocus();
-            }
-            isValid = false;
-        }
-
-        return isValid;
-    }
-
-    private void clearForm() {
-        etMaterial.setText("");
-        etMeasurements.setText("");
-        etColor.setText("");
-        etArea.setText("");
-    }
-
-    private void setupRequestStatusListener() {
-        db.collection("pedidos")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
-                        }
-
-                        if (snapshots != null) {
-                            for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                                if (dc.getType() == DocumentChange.Type.MODIFIED) {
-                                    String status = dc.getDocument().getString("status");
-                                    updateNotificationStatus(status);
-                                }
-                            }
-                        }
-                    }
-                });
-    }
-
-    private void updateNotificationStatus(String status) {
-        if ("aceptado".equals(status)) {
-            tvNotifications.setText(getString(R.string.request_accepted_by_materials));
-            tvNotifications.setVisibility(View.VISIBLE);
-            tvNotifications.setBackgroundColor(getResources().getColor(R.color.success_green));
-        } else if ("rechazado".equals(status)) {
-            tvNotifications.setText(getString(R.string.request_rejected_by_materials));
-            tvNotifications.setVisibility(View.VISIBLE);
-            tvNotifications.setBackgroundColor(getResources().getColor(R.color.error_red));
+    @Override
+    protected void loadInitialFragment() {
+        replaceFragment(new RequestMaterialFragment());
+        if (navItems.size() > 0) {
+            navBar.selectItem(0);
         }
     }
 
-    private void showSuccess(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void showError(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    @Override
+    protected void onNavItemSelected(int position, AnimatedBottomNavBar.NavItem item) {
+        Fragment fragment = null;
+        switch (position) {
+            case 0:
+                fragment = new RequestMaterialFragment();
+                break;
+            case 1:
+                fragment = new TicketsFragment(); // Se creará después
+                break;
+            case 2:
+                fragment = new HistoryFragment(); // Se creará después
+                break;
+        }
+        if (fragment != null) {
+            replaceFragment(fragment);
+        }
     }
 }

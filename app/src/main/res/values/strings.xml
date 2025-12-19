@@ -41,8 +41,23 @@
     <string name="request_rejected_by_materials">Solicitud rechazada por Materiales</string>
     <string name="notification">Notificación</string>
     
+    <!-- Navigation -->
+    <string name="nav_request">Solicitar</string>
+    <string name="nav_tickets">Tickets</string>
+    <string name="nav_history">Historial</string>
+    <string name="nav_confirm">Confirmar</string>
+    <string name="nav_prepare">Preparar</string>
+    <string name="nav_ready">Listo</string>
+    
     <!-- Common -->
     <string name="loading">Cargando...</string>
     <string name="error">Error</string>
     <string name="success">Éxito</string>
+    
+    <!-- Item Types -->
+    <string-array name="item_types">
+        <item>Material</item>
+        <item>Componente</item>
+        <item>Herramienta</item>
+    </string-array>
 </resources>
